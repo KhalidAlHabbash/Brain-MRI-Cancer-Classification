@@ -4,4 +4,5 @@ channels:
   - defaults
 dependencies:
   - python=3.11
+  - kagglehub
 prefix: /opt/miniconda3/envs/BrainMRIClassification
