@@ -6,7 +6,8 @@ import os
 
 
 class DataSetManager:
-    def __init__(self, kaggle_dataset_name="masoudnickparvar/brain-tumor-mri-dataset", raw_data_dir="./raw/brain_tumor_mri_dataset/"):
+    def __init__(self, kaggle_dataset_name="masoudnickparvar/brain-tumor-mri-dataset",
+                 raw_data_dir="./raw/brain_tumor_mri_dataset/"):
         """
 
         :param kaggle_dataset_name: Name of the kaggle dataset to download
@@ -14,8 +15,8 @@ class DataSetManager:
         """
         self.kaggle_dataset_name = kaggle_dataset_name
         self.raw_data_dir = raw_data_dir
-        self.raw_train_data = raw_data_dir+"/Training"
-        self.raw_test_data = raw_data_dir+"/Testing"
+        self.raw_train_data = raw_data_dir + "/Training"
+        self.raw_test_data = raw_data_dir + "/Testing"
 
     def download_and_move_dataset(self):
         """
@@ -37,7 +38,6 @@ class DataSetManager:
         print(f"Data successfully moved to: {self.raw_data_dir}")
 
         return self.raw_data_dir
-
 
     def load_data(self, batch_size=16):
         """
@@ -86,11 +86,3 @@ class DataSetManager:
         test_loader = DataLoader(dataset=full_test_dataset, batch_size=batch_size, shuffle=False)
 
         return train_loader, val_loader, test_loader
-
-
-
-
-
-
-
-
