@@ -7,7 +7,7 @@ import os
 
 class DataSetManager:
     def __init__(self, kaggle_dataset_name="masoudnickparvar/brain-tumor-mri-dataset",
-                 raw_data_dir="./raw/brain_tumor_mri_dataset/"):
+                 raw_data_dir="../data/raw/brain_tumor_mri_dataset/"):
         """
 
         :param kaggle_dataset_name: Name of the kaggle dataset to download
@@ -39,7 +39,7 @@ class DataSetManager:
 
         return self.raw_data_dir
 
-    def load_data(self, batch_size=16):
+    def load_data(self, batch_size=32):
         """
         Load dataset
         :param batch_size: Splits datasets into mini batches defined by 'batch_size'
@@ -67,22 +67,20 @@ class DataSetManager:
         ])
 
         # Load both the training and testing datasets
-        full_train_dataset = datasets.ImageFolder(root=self.raw_train_data)
-        full_test_dataset = datasets.ImageFolder(root=self.raw_test_data)
+        full_train_dataset = datasets.ImageFolder(root=self.raw_train_data, transform=train_transform)
+        full_test_dataset = datasets.ImageFolder(root=self.raw_test_data, transform=val_test_transforms)
 
         # Split into train and validation sets
         train_size = int(0.8 * len(full_train_dataset))
         val_size = len(full_train_dataset) - train_size
         train_dataset, val_dataset = random_split(full_train_dataset, [train_size, val_size])
 
-        # Apply the transformations
-        train_dataset.transform = train_transform
-        val_dataset.transform = val_test_transforms
-        full_test_dataset.transform = val_test_transforms
+        # Over-ride validation set augmentation
+        val_dataset.dataset.transform = val_test_transforms
 
         # Create batches for both train and validation datasets
         train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
         val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
         test_loader = DataLoader(dataset=full_test_dataset, batch_size=batch_size, shuffle=False)
 
-        return train_loader, val_loader, test_loader
+        return full_train_dataset, full_test_dataset, train_loader, val_loader, test_loader
