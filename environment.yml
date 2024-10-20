@@ -7,4 +7,6 @@ dependencies:
   - kagglehub
   - pytorch
   - torchvision
+  - jupyter
+  - matplotlib
 prefix: /opt/miniconda3/envs/BrainMRIClassification
