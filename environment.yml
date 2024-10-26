@@ -9,4 +9,6 @@ dependencies:
   - torchvision
   - jupyter
   - matplotlib
+  - scikit-learn
+  - seaborn
 prefix: /opt/miniconda3/envs/BrainMRIClassification
