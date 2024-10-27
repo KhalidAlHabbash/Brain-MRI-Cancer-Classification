@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, render_template
 from werkzeug.utils import secure_filename
 import os
 from PIL import Image
-from model import BrainTumorClassifier
+from backend.src.model import BrainTumorClassifier
 import torch
 import torchvision.transforms as transforms
 from flask_cors import CORS
