@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Classifier</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Brain Tumor Classifier</h1>
+    <p>Upload an MRI scan image to predict if a brain tumor is present using our deep learning model.</p>
+
+    <!-- Image input form -->
+    <form id="upload-form" enctype="multipart/form-data">
+        <label for="image-upload" class="custom-file-upload">
+            Upload Image
+        </label>
+        <input type="file" id="image-upload" name="image" accept="image/*" required>
+        <button type="submit">Classify</button>
+    </form>
+
+    <!-- Output field for displaying results -->
+    <div id="output">
+        <h2>Prediction Output</h2>
+        <p id="result">Awaiting image upload...</p>
+    </div>
+
+    <!-- Image display area -->
+    <div id="image-preview-container">
+        <img id="image-preview" src="" alt="Uploaded Image" style="display: none; max-width: 150px; max-height: 150px"/>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('upload-form');
+    const result = document.getElementById('result');
+    const imageUpload = document.getElementById('image-upload');
+    const imagePreview = document.getElementById('image-preview');
+
+    // Event listener for file input change
+    imageUpload.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                result.textContent = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        result.textContent = 'Classifying... Please wait.';
+
+        const formData = new FormData(form);
+
+        // Send the image to the server
+        fetch('http://localhost:5000/classify', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display the prediction result
+                if (data.prediction) {
+                    result.textContent = `Prediction: ${data.prediction}`;
+                } else if (data.error) {
+                    result.textContent = `Error: ${data.error}`;
+                } else {
+                    result.textContent = 'Unexpected response from server.';
+                }
+            })
+            .catch(error => {
+                result.textContent = `Error: ${error.message}`;
+            });
+    });
+</script>
+</body>
+</html>
