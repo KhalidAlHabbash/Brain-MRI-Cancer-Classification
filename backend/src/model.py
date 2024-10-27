@@ -1,3 +1,4 @@
+
 import torch.nn as nn
 
 
@@ -23,6 +24,7 @@ class BrainTumorClassifier(nn.Module):
         self.flatten = nn.Flatten()
         self.dropout = nn.Dropout(0.5)
         self.relu = nn.ReLU()
+
 
     def forward(self, x):
         """

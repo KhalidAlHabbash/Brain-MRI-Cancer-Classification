@@ -14,3 +14,4 @@ dependencies:
   - flask
   - flask-cors
 prefix: /opt/miniconda3/envs/BrainMRIClassification
+
