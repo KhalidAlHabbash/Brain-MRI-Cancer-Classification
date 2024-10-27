@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brain Tumor Classifier</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="../static/styles.css">
 </head>
 <body>
 <div class="container">
@@ -54,8 +54,33 @@
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         result.textContent = 'Classifying... Please wait.';
-        // to be completed for classification
 
+        const formData = new FormData(form);
+
+        // Send the image to the server
+        fetch('http://localhost:5000/classify', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Display the prediction result
+                if (data.prediction) {
+                    result.textContent = `Prediction: ${data.prediction}`;
+                } else if (data.error) {
+                    result.textContent = `Error: ${data.error}`;
+                } else {
+                    result.textContent = 'Unexpected response from server.';
+                }
+            })
+            .catch(error => {
+                result.textContent = `Error: ${error.message}`;
+            });
     });
 </script>
 </body>

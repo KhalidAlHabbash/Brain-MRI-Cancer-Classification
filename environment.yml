@@ -11,4 +11,6 @@ dependencies:
   - matplotlib
   - scikit-learn
   - seaborn
+  - flask
+  - flask-cors
 prefix: /opt/miniconda3/envs/BrainMRIClassification
