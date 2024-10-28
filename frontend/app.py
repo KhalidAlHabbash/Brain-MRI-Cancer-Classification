@@ -61,4 +61,4 @@ def classify_image():
 
 if __name__ == '__main__':
     webbrowser.open_new('http://127.0.0.1:5001/')  # Open the browser automatically
-    app.run(host='0.0.0.0', port=5001)  # Run the Flask app
+    app.run(host='127.0.0.1', port=5001, debug=True)  # Run the Flask app
