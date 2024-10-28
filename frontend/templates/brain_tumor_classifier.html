@@ -58,7 +58,7 @@
         const formData = new FormData(form);
 
         // Send the image to the server
-        fetch('http://localhost:5000/classify', {
+        fetch('http://localhost:5001/classify', {
             method: 'POST',
             body: formData
         })
