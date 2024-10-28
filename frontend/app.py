@@ -1,24 +1,14 @@
 import webbrowser
 from flask import Flask, request, jsonify, render_template
-from werkzeug.utils import secure_filename
-import os
 from PIL import Image
 from backend.src.model import BrainTumorClassifier
 import torch
 import torchvision.transforms as transforms
 from flask_cors import CORS
+import io
 
 app = Flask(__name__)
 CORS(app)
-
-# Set the upload folder and allowed extensions
-UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-# Ensure the upload folder exists
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load pre-trained model
 model = BrainTumorClassifier(4)
@@ -32,15 +22,9 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 @app.route('/')
 def home():
     return render_template('brain_tumor_classifier.html')  # Render the HTML file
-
 
 @app.route('/classify', methods=['POST'])
 def classify_image():
@@ -52,34 +36,27 @@ def classify_image():
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        file.save(file_path)
+    # Read image file directly
+    img = Image.open(io.BytesIO(file.read())).convert('RGB')
+    img_tensor = transform(img).unsqueeze(0)
 
-        # Prepare the image and make a prediction
-        img = Image.open(file_path).convert('RGB')
-        img_tensor = transform(img).unsqueeze(0)
+    # Prediction
+    with torch.no_grad():
+        outputs = model(img_tensor)
+        _, predicted = torch.max(outputs, 1)
 
-        with torch.no_grad():  # Disable gradient calculation
-            outputs = model(img_tensor)
-            _, predicted = torch.max(outputs, 1)
+    predicted_class_index = predicted.item()
 
-        predicted_class_index = predicted.item()  # Get  predicted index
+    # Map indices to class names
+    class_names = {
+        0: 'Glioma',
+        1: 'Meningioma',
+        2: 'No Tumor',
+        3: 'Pituitary Tumor'
+    }
 
-        # Map indices to class names
-        class_names = {
-            0: 'Glioma',
-            1: 'Meningioma',
-            2: 'No Tumor',
-            3: 'Pituitary Tumor'
-        }
-
-        # Get the predicted class name
-        predicted_class = class_names.get(predicted_class_index, "Unknown Class")
-        return jsonify({'prediction': predicted_class})
-
-    return jsonify({'error': 'File type not allowed'}), 400
+    predicted_class = class_names.get(predicted_class_index, "Unknown Class")
+    return jsonify({'prediction': predicted_class})
 
 
 if __name__ == '__main__':
