@@ -1,4 +1,4 @@
-# 🧠 Brain Tumor MRI Classification
+# Brain Tumor MRI Classification
 
 A deep learning web application that classifies brain MRI scans into four categories: No Tumor, Glioma, Meningioma, and Pituitary Tumor. The project uses a Convolutional Neural Network (CNN) trained on the Brain Tumor MRI Dataset from Kaggle.
 
